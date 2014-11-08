@@ -17,6 +17,8 @@ $(function(){
 				// call algo after here
 				var algoResult = optimizeDelivery(mapString, parcelObj);
 
+				$("#inGuild").css("display", "block");
+				$("#mapGuild").css("display", "block");
 				$("#inText").text(JSON.stringify(parcelObj));
 				$("#mapText").text(mapString);
 
@@ -24,14 +26,11 @@ $(function(){
 					alert(JSON.stringify(algoResult.error));
 				} else {
 					$("#outGuild").css("display", "block");
-					$("#outText").text(JSON.stringify(algoResult));
+					$("#outText").html(JSON.stringify(algoResult));
 
-					var sumObj = GetAuditFunction(algoResult);
+					// var sumObj = GetAuditFunction(algoResult);
+					console.log(algoResult);
 
-					$("#carNum").text(sumObj["carNum"]);
-					$("#parcelNum").text(sumObj["parcelNum"]);
-					$("#timeNum").text(sumObj["fwt"]);
-					$("#profitNum").text(sumObj["profit"]);
 				}
 
 				// console.log(mapString);
