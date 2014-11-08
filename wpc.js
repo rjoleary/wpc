@@ -9,21 +9,37 @@ $(function(){
 			var mapString = evt.target.result;
 			file2 = document.getElementById("parcelFile").files[0];
 			readFile(file2, function(evt2) {	
-				var parcelFile = evt2.target.result;
-				var obj = $.parseJSON(parcelFile);
+				var parcelObj = $.parseJSON(evt2.target.result);
 
 
 
 
-				// call function after here
+				// call algo after here
+				var algoResult = optimizeDelivery(mapString, parcelObj);
 
+				$("#inText").text(JSON.stringify(parcelObj));
+				$("#mapText").text(mapString);
+
+				if (algoResult.error) {
+					alert(JSON.stringify(algoResult.error));
+				} else {
+					$("#outGuild").css("display", "block");
+					$("#outText").text(JSON.stringify(algoResult));
+
+					var sumObj = GetAuditFunction(algoResult);
+
+					$("#carNum").text(sumObj["carNum"]);
+					$("#parcelNum").text(sumObj["parcelNum"]);
+					$("#timeNum").text(sumObj["fwt"]);
+					$("#profitNum").text(sumObj["profit"]);
+				}
 
 				// console.log(mapString);
 				// console.log(obj);
 
 
 				// Assume in here, algo is done
-				
+
 
 
 			});
