@@ -99,21 +99,26 @@ function shortestPath(mapArray, startNode, endNode) {
 function optimizeDeliveryWithNCars(mapArray, deliveryRequestJson, nCars) {
     // The carrier starts at the headquarters.
     var carrierNode = {
+        action: 'start',
         x: deliveryRequestJson.deliveryHeadquarter.x,
-        y: deliveryRequestJson.deliveryHeadquarter.y
+        y: deliveryRequestJson.deliveryHeadquarter.y,
     };
     
-    var schedule = [{carrierId: 'car1', actions: []}];
+    var schedule = [{carrierId: 'car1', actions: [carrierNode]}];
     
     $.each(deliveryRequestJson.requests, function (index, request) {
-        // Drive from the previous pickkup to the current pickup.
-        schedule[0].actions = schedule[0].actions.concat(shortestPath(mapArray, carrierNode, request.pickup));
+        // Drive from the previous pickup to the current pickup.
+        schedule[0].actions = schedule[0].actions.concat(shortestPath(mapArray, carrierNode, request.pickup).slice(1));
+        
+        // Drive from the pickup to dropoff location.
+        var pickupIndex = schedule[0].actions.length;
         schedule[0].actions = schedule[0].actions.concat(request.actions);
+        carrierNode = schedule[0].actions[schedule[0].actions.length-1];
+        
+        // Add the actions for pickup and dropoff.
+        schedule[0].actions[pickupIndex] = {action: 'pickup', id: index + 1};
         schedule[0].actions.push({action: 'dropoff', id: index + 1});
     });
-    
-    // The first node must be called 'start'.
-    schedule[0].actions[0].action = 'start';
     
     return schedule;
 }
