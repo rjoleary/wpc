@@ -92,21 +92,26 @@
       <section id="main-content">
           <section class="wrapper">
 
-              <div class="row">
-                 
+              <div class="row" style="padding:15px">
+                 <form enctype="multipart/text" method="post" id="mapSubmit">
+                    Map File: <input id="mapFile" type="file" />
+                    <br>
+                    Requests File: <input id="parcelFile" type="file">
+                    <br>
+                    <input type="submit"/>
+                 </form>
                   	
              
                   
-                      
-                      
-					</div><!-- /row -->	
+    					</div><!-- /row -->	
 					
                   
                   
                   
      
       <!--main content end-->
-  </section>
+      </section>
+</section>
 
     <!-- js placed at the end of the document so the pages load faster -->
     <script src="assets/js/jquery.js"></script>
@@ -126,7 +131,10 @@
 
     <!--script for this page-->
     <script src="assets/js/sparkline-chart.js"></script>    
-	<script src="assets/js/zabuto_calendar.js"></script>	
+	  <script src="assets/js/zabuto_calendar.js"></script>	
+
+    <script src="wpc.js"></script>  
+    <script src="algo.js"></script>  
 	
 	
   
