@@ -21,11 +21,14 @@ function optimizeDelivery(mapCsv, deliveryRequestJson) {
         // Parse the map csv file.
         var mapArray = parseMapCsv(mapCsv);
 
-        // Start with a single car for now.
+        // Find the shortest path from every pickup to its dropoff.
         $.each(deliveryRequestJson.requests, function (index, request) {
             request.actions = shortestPath(mapArray, request.pickup, request.dropoff);
         });
-        return optimizeDeliveryWithNCars(mapArray, deliveryRequestJson, 1);
+        
+        // Heuristic to determine the number of cars.
+        var nCars = Math.min(Math.ceil(deliveryRequestJson.requests.length / 4), deliveryRequestJson.requests.length);
+        return optimizeDeliveryWithNCars(mapArray, deliveryRequestJson, nCars);
     } catch (e) {
         return {error: '' + e};
     }
@@ -97,28 +100,55 @@ function shortestPath(mapArray, startNode, endNode) {
  * @return schedule {Object}
  */
 function optimizeDeliveryWithNCars(mapArray, deliveryRequestJson, nCars) {
+    var schedules = [];
+    
+    // Remember the id of each request before splitting.
+    $.each(deliveryRequestJson.requests, function (index, request) {
+        request.index = index + 1;
+    });
+    
+    // Split the requests into smaller requests for each car.
+    var splitRequests = [];
+    var i = 0;
+    var n = nCars
+    var length = deliveryRequestJson.requests.length;
+    while (i < length) {
+        splitRequests.push(deliveryRequestJson.requests.slice(i, i += Math.ceil((length - i) / n--)));
+    }
+    
+    for (var i = 0; i < nCars; i++) {
+        schedules.push({
+            carrierId: 'car' + i,
+            actions: optimizeDeliveryForOneCar(mapArray, deliveryRequestJson.deliveryHeadquarter, splitRequests[i])
+        });
+    }
+    
+    return schedules;
+}
+
+function optimizeDeliveryForOneCar(mapArray, headquarters, requests, indexOffset) {
     // The carrier starts at the headquarters.
     var carrierNode = {
         action: 'start',
-        x: deliveryRequestJson.deliveryHeadquarter.x,
-        y: deliveryRequestJson.deliveryHeadquarter.y,
+        x: headquarters.x,
+        y: headquarters.y
     };
     
-    var schedule = [{carrierId: 'car1', actions: [carrierNode]}];
+    var actions = [carrierNode];
     
-    $.each(deliveryRequestJson.requests, function (index, request) {
+    $.each(requests, function (index, request) {
         // Drive from the previous pickup to the current pickup.
-        schedule[0].actions = schedule[0].actions.concat(shortestPath(mapArray, carrierNode, request.pickup).slice(1));
+        actions = actions.concat(shortestPath(mapArray, carrierNode, request.pickup).slice(1));
         
         // Drive from the pickup to dropoff location.
-        var pickupIndex = schedule[0].actions.length;
-        schedule[0].actions = schedule[0].actions.concat(request.actions);
-        carrierNode = schedule[0].actions[schedule[0].actions.length-1];
+        var pickupIndex = actions.length;
+        actions = actions.concat(request.actions);
+        carrierNode = actions[actions.length-1];
         
         // Add the actions for pickup and dropoff.
-        schedule[0].actions[pickupIndex] = {action: 'pickup', id: index + 1};
-        schedule[0].actions.push({action: 'dropoff', id: index + 1});
+        actions[pickupIndex] = {action: 'pickup', id: request.index};
+        actions.push({action: 'dropoff', id: request.index});
     });
     
-    return schedule;
+    return actions;
 }
