@@ -12,9 +12,20 @@ $(function(){
 				var parcelFile = evt2.target.result;
 				var obj = $.parseJSON(parcelFile);
 
+
+
+
 				// call function after here
-				console.log(mapString);
-				console.log(obj);
+
+
+				// console.log(mapString);
+				// console.log(obj);
+
+
+				// Assume in here, algo is done
+				
+
+
 			});
 		});
 	});
