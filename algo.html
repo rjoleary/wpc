@@ -1,0 +1,55 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <!-- Third-party libraries -->
+    <script src="jquery-1.11.1.min.js"></script>
+    <script src="js-priority-queue.js"></script>
+    
+    <script src="algo.js"></script>
+    <textarea class="mapcsv">XXXXXXXX
+XX XXX X
+X      X
+XX XXX X
+X  XXX X
+XH XXX X
+X      X
+XXXXXXXX</textarea>
+    <textarea class="requestjson">{
+    "requests": [
+        {
+            "dropoff": {
+                "y": 3,
+                "x": 6
+            },
+            "pickup": {
+                "y": 6,
+                "x": 1
+            },
+            "deliveryFee": 16.0,
+            "id": 1
+        },
+        {
+            "dropoff": {
+                "y": 2,
+                "x": 3
+            },
+            "pickup": {
+                "y": 3,
+                "x": 2
+            },
+            "deliveryFee": 4.0,
+            "id": 2
+        }
+    ],
+    "deliveryHeadquarter": {
+        "y": 5,
+        "x": 1
+    }
+}</textarea>
+    <textarea class="output"></textarea>
+    <script>
+      $('.output').val(JSON.stringify(optimizeDelivery($('.mapcsv').val(), JSON.parse($('.requestjson').val()))));
+    </script>
+  </body>
+</html>
